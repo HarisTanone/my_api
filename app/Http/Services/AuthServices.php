@@ -24,7 +24,7 @@ class AuthServices extends BaseController
     public function login($request): JsonResponse
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->errorHandler('Invalid Input', []);
+            return $this->errorHandler('Invalid Email Or Password!', []);
         }
 
         $user = Auth::user();
