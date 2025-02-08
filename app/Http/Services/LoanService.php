@@ -9,6 +9,7 @@ use App\Models\Loan;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class LoanService extends BaseController
@@ -78,13 +79,21 @@ class LoanService extends BaseController
         });
     }
 
-    public function getLoanHistory($userId): JsonResponse
+    public function getLoanHistory($userId = null): JsonResponse
     {
-        $loans = Loan::with(['book', 'bookReturn'])
-            ->where('user_id', $userId)
-            ->latest()
-            ->paginate(10);
+        $user = Auth::user();
 
+        if ($user->role !== 'admin') {
+            $userId = $user->id;
+        }
+
+        $query = Loan::with(['book', 'bookReturn'])->latest();
+
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $userId);
+        }
+
+        $loans = $query->paginate(10);
         $loanResource = LoanResource::collection($loans)->response()->getData(true);
 
         return $this->successPageHandler(
@@ -92,4 +101,5 @@ class LoanService extends BaseController
             $loanResource
         );
     }
+
 }
