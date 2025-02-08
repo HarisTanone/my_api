@@ -6,7 +6,7 @@ use \Illuminate\Pagination\LengthAwarePaginator as LengthAwarePaginator;
 
 class BaseController extends Controller
 {
-    public function successHandler($message, $data, $page = false): JsonResponse
+    public function successHandler($message, $data): JsonResponse
     {
         $response = [
             'status' => true,
@@ -14,24 +14,33 @@ class BaseController extends Controller
             'data' => $data
         ];
 
-        if ($data instanceof LengthAwarePaginator && $page) {
-            $response['pagination'] = [
-                'total' => $data->total(),
-                'count' => $data->count(),
-                'per_page' => $data->perPage(),
-                'current_page' => $data->currentPage(),
-                'total_pages' => $data->lastPage(),
-                'first_page_url' => $data->url(1),
-                'last_page_url' => $data->url($data->lastPage()),
-                'next_page_url' => $data->nextPageUrl(),
-                'prev_page_url' => $data->previousPageUrl(),
-            ];
+        return response()->json($response, 200);
+    }
+    public function successPageHandler($message, $data): JsonResponse
+    {
+        $response = [
+            'status' => true,
+            'message' => $message,
+            'data' => $data['data'] ?? []
+        ];
 
-            $response['data'] = $data->items();
+        if (isset($data['meta'])) {
+            $response['pagination'] = [
+                'total' => $data['meta']['total'],
+                'count' => $data['meta']['to'],
+                'per_page' => $data['meta']['per_page'],
+                'current_page' => $data['meta']['current_page'],
+                'total_pages' => $data['meta']['last_page'],
+                'first_page_url' => $data['links']['first'],
+                'last_page_url' => $data['links']['last'],
+                'next_page_url' => $data['links']['next'],
+                'prev_page_url' => $data['links']['prev'],
+            ];
         }
 
         return response()->json($response, 200);
     }
+
 
     public function errorHandler($message, $error = []): JsonResponse
     {

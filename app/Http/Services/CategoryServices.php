@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 
@@ -20,10 +21,11 @@ class CategoryServices extends BaseController
     public function getAllCategories(): JsonResponse
     {
         $categories = Category::paginate(10);
-        return $this->successHandler(
+        $categoriesResource = CategoryResource::collection($categories)->response()->getData(true);
+
+        return $this->successPageHandler(
             'Daftar kategori',
-            $categories,
-            true
+            $categoriesResource
         );
     }
 
