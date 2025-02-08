@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LoanController;
 use Illuminate\Support\Facades\Route;
+
 
 
 Route::any('login', function () {
@@ -20,4 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('books', BookController::class);
     Route::post('books/{id}/restore', [BookController::class, 'restore']);
+
+    Route::get('/loans', [LoanController::class, 'index']);
+    Route::post('/loans', [LoanController::class, 'store']);
+    Route::post('/loans/{id}/returnbook', [LoanController::class, 'rBook']);
+
 });
