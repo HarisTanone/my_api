@@ -10,7 +10,7 @@ class BookReturn extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'returns';
+    protected $table = 'book_returns';
 
     protected $fillable = [
         'loan_id',
@@ -25,7 +25,6 @@ class BookReturn extends Model
 
     protected $dates = ['deleted_at'];
 
-    // Relasi dengan Loan
     public function loan()
     {
         return $this->belongsTo(Loan::class);
